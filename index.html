@@ -1,0 +1,1322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#c1121f">
+<title>CPR · RCP · Puerto Rico · 9-1-1</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --red: #c1121f;
+  --red-d: #e63946;
+  --orange: #e76f00;
+  --green: #2d8a4e;
+  --blue: #1565c0;
+  --yellow: #ffbe0b;
+  --white: #fff;
+  --text: #1a1a2e;
+  --muted: #5a6070;
+  --bg: #f7f8fc;
+  --surface: #fff;
+  --border: #e0e4ef;
+  --shadow: 0 4px 20px rgba(0,0,0,.10);
+  --display: 'Bebas Neue', sans-serif;
+  --body: 'Nunito', sans-serif;
+}
+body.dark {
+  --bg: #0f1117;
+  --surface: #1a1e2a;
+  --border: #2a3040;
+  --text: #eef0f8;
+  --muted: #8090b0;
+  --shadow: 0 4px 20px rgba(0,0,0,.35);
+}
+/* Light mode fixes */
+body:not(.dark) .alert-box.red    { background: #fde8e8; border-color: #c1121f; color: #6a0810; }
+body:not(.dark) .alert-box.green  { background: #e3f5eb; border-color: #2d8a4e; color: #145c30; }
+body:not(.dark) .alert-box.orange { background: #fff0dc; border-color: #e76f00; color: #6a3000; }
+body:not(.dark) .alert-box.blue   { background: #e3eeff; border-color: #1565c0; color: #0a2a6a; }
+body:not(.dark) .do-box   { background: #e3f5eb; border-color: #2d8a4e; color: #145c30; }
+body:not(.dark) .dont-box { background: #fde8e8; border-color: #c1121f; color: #6a0810; }
+body:not(.dark) .choke-step { background: #eef2fa; border-color: #c8d4e8; }
+body:not(.dark) .aed-step   { background: #eef2fa; border-color: #c8d4e8; }
+body:not(.dark) .metric-box { background: #e8eef8; border-color: #b0c0d8; }
+body:not(.dark) .instr-icon { background: #e8eef8; }
+body:not(.dark) .waiting-item { border-bottom-color: #c8d4e8; }
+body:not(.dark) .hand-diagram { background: #e8eef8; border-color: #b0c0d8; }
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--body);
+  font-size: 16px;
+  line-height: 1.5;
+  transition: background .25s, color .25s;
+}
+
+/* ══ TOP BAR ══ */
+.topbar {
+  background: var(--red);
+  padding: 10px 16px;
+  display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: 0; z-index: 200;
+  box-shadow: 0 2px 12px rgba(193,18,31,.4);
+}
+.topbar-title {
+  font-family: var(--display);
+  font-size: 26px;
+  color: #fff;
+  letter-spacing: 2px;
+  line-height: 1;
+}
+.topbar-sub { font-size: 11px; color: rgba(255,255,255,.8); margin-top: 1px; font-weight: 700; letter-spacing: 1px; }
+.top-controls { display: flex; gap: 8px; }
+.ctrl-btn {
+  background: rgba(255,255,255,.2);
+  border: 1.5px solid rgba(255,255,255,.4);
+  color: #fff;
+  border-radius: 20px;
+  padding: 5px 13px;
+  font-family: var(--body);
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  letter-spacing: .5px;
+  transition: background .15s;
+}
+.ctrl-btn:hover { background: rgba(255,255,255,.3); }
+
+/* ══ EMERGENCY CALL BUTTON ══ */
+.call-bar {
+  background: var(--red);
+  margin: 16px 16px 0;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 18px rgba(193,18,31,.35);
+}
+.call-btn {
+  display: flex; align-items: center; justify-content: center; gap: 12px;
+  padding: 18px 20px;
+  text-decoration: none;
+  background: var(--red);
+  transition: background .15s;
+  width: 100%;
+  border: none; cursor: pointer;
+}
+.call-btn:hover, .call-btn:active { background: #a30f1a; }
+.call-icon { font-size: 34px; animation: ring 2s infinite; }
+@keyframes ring {
+  0%,100% { transform: rotate(0); }
+  10% { transform: rotate(-12deg); }
+  20% { transform: rotate(12deg); }
+  30% { transform: rotate(-8deg); }
+  40% { transform: rotate(8deg); }
+  50% { transform: rotate(0); }
+}
+.call-text { text-align: left; }
+.call-number { font-family: var(--display); font-size: 42px; color: #fff; letter-spacing: 4px; line-height: 1; }
+.call-label { font-size: 12px; color: rgba(255,255,255,.85); font-weight: 800; letter-spacing: 1px; }
+
+/* ══ NAV PILLS ══ */
+.nav-wrap { padding: 14px 16px 0; overflow-x: auto; scrollbar-width: none; }
+.nav-wrap::-webkit-scrollbar { display: none; }
+.nav-pills { display: flex; gap: 8px; }
+.nav-pill {
+  background: var(--surface);
+  border: 2px solid var(--border);
+  color: var(--muted);
+  border-radius: 24px;
+  padding: 8px 18px;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all .18s;
+  letter-spacing: .3px;
+}
+.nav-pill:hover { border-color: var(--red); color: var(--red); }
+.nav-pill.active { background: var(--red); border-color: var(--red); color: #fff; }
+.nav-pill.p-blue.active { background: var(--blue); border-color: var(--blue); }
+.nav-pill.p-green.active { background: var(--green); border-color: var(--green); }
+.nav-pill.p-orange.active { background: var(--orange); border-color: var(--orange); }
+
+/* ══ MAIN ══ */
+main { padding: 16px; max-width: 600px; margin: 0 auto; }
+.page { display: none; }
+.page.active { display: block; }
+
+/* ══ BIG STEP CARDS ══ */
+.step-card {
+  background: var(--surface);
+  border-radius: 20px;
+  box-shadow: var(--shadow);
+  margin-bottom: 16px;
+  overflow: hidden;
+  border: 2px solid var(--border);
+}
+.step-header {
+  display: flex; align-items: stretch; gap: 0;
+}
+.step-number {
+  min-width: 72px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--display);
+  font-size: 52px;
+  color: #fff;
+  line-height: 1;
+  padding: 16px 0;
+  flex-shrink: 0;
+}
+.step-head-text {
+  padding: 16px 16px 16px 4px;
+  display: flex; flex-direction: column; justify-content: center;
+}
+.step-title {
+  font-family: var(--display);
+  font-size: 26px;
+  letter-spacing: 1px;
+  line-height: 1.1;
+  color: var(--text);
+}
+.step-subtitle { font-size: 14px; color: var(--muted); font-weight: 700; margin-top: 2px; }
+.step-body { padding: 0 16px 16px 16px; }
+
+.sn-red { background: var(--red); }
+.sn-orange { background: var(--orange); }
+.sn-green { background: var(--green); }
+.sn-blue { background: var(--blue); }
+.sn-yellow { background: var(--yellow); }
+
+/* ══ INSTRUCTION ITEMS ══ */
+.instr {
+  display: flex; gap: 10px; align-items: flex-start;
+  margin-bottom: 10px;
+}
+.instr-icon {
+  min-width: 36px; height: 36px;
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; flex-shrink: 0;
+  background: var(--bg);
+}
+.instr-text { font-size: 15px; font-weight: 700; line-height: 1.4; padding-top: 7px; }
+.instr-text span { color: var(--muted); font-weight: 600; display: block; font-size: 13px; margin-top: 1px; }
+
+/* ══ BIG VISUAL ══ */
+.big-visual {
+  background: var(--bg);
+  border-radius: 14px;
+  padding: 20px;
+  margin-bottom: 12px;
+  text-align: center;
+}
+.big-num {
+  font-family: var(--display);
+  font-size: 72px;
+  line-height: 1;
+  color: var(--red);
+  letter-spacing: 2px;
+}
+.big-unit { font-size: 14px; font-weight: 800; color: var(--muted); margin-top: -4px; letter-spacing: 1px; }
+.big-label { font-size: 13px; color: var(--muted); font-weight: 700; margin-top: 4px; }
+
+.metrics-row { display: flex; gap: 10px; margin-bottom: 12px; }
+.metric-box {
+  flex: 1; background: var(--bg); border-radius: 14px;
+  padding: 14px 10px; text-align: center;
+  border: 2px solid var(--border);
+}
+.metric-val {
+  font-family: var(--display);
+  font-size: 30px; color: var(--red);
+  line-height: 1;
+}
+.metric-unit { font-size: 11px; color: var(--muted); font-weight: 800; letter-spacing: .5px; margin-top: 2px; }
+
+/* ══ METRONOME / TIMER ══ */
+.metro-card {
+  background: var(--red);
+  border-radius: 18px;
+  padding: 18px;
+  margin-bottom: 16px;
+  text-align: center;
+  box-shadow: 0 6px 24px rgba(193,18,31,.3);
+}
+.metro-timer {
+  font-family: var(--display);
+  font-size: 56px;
+  color: #fff;
+  letter-spacing: 5px;
+  line-height: 1;
+  margin: 4px 0 10px;
+  text-shadow: 0 2px 12px rgba(0,0,0,.2);
+}
+.metro-label { font-size: 11px; color: rgba(255,255,255,.8); font-weight: 800; letter-spacing: 2px; text-transform: uppercase; }
+.metro-bpm { font-size: 13px; color: rgba(255,255,255,.9); font-weight: 800; margin-top: 4px; }
+
+.btn-row { display: flex; gap: 10px; justify-content: center; margin-top: 12px; }
+.big-btn {
+  padding: 13px 22px;
+  border-radius: 14px;
+  border: none;
+  font-family: var(--body);
+  font-size: 15px;
+  font-weight: 900;
+  cursor: pointer;
+  transition: opacity .15s, transform .1s;
+  letter-spacing: .3px;
+}
+.big-btn:active { transform: scale(.96); }
+.bb-white { background: #fff; color: var(--red); }
+.bb-ghost { background: rgba(255,255,255,.2); color: #fff; border: 2px solid rgba(255,255,255,.4); }
+
+.pulse-dot {
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  margin: 0 auto 8px;
+  opacity: 0;
+  transition: opacity .05s;
+}
+.pulse-dot.flash { opacity: 1; }
+
+/* ══ ALERT BOXES ══ */
+.alert-box {
+  border-radius: 14px;
+  padding: 14px 16px;
+  margin-bottom: 12px;
+  display: flex; gap: 10px; align-items: flex-start;
+  font-size: 14px; font-weight: 700; line-height: 1.5;
+}
+.alert-box.red { background: #fde8e8; border: 2px solid var(--red); color: #7a0a12; }
+.alert-box.green { background: #e6f4ec; border: 2px solid var(--green); color: #1a5c33; }
+.alert-box.orange { background: #fff0e0; border: 2px solid var(--orange); color: #7a3800; }
+.alert-box.blue { background: #e3eeff; border: 2px solid var(--blue); color: #0a2e6a; }
+body.dark .alert-box.red { background: #2a0a0e; color: #ff9090; }
+body.dark .alert-box.green { background: #0a2014; color: #80e0a0; }
+body.dark .alert-box.orange { background: #2a1400; color: #ffb060; }
+body.dark .alert-box.blue { background: #0a1a2e; color: #80b0ff; }
+.alert-icon { font-size: 22px; flex-shrink: 0; margin-top: -1px; }
+
+/* ══ HAND DIAGRAM ══ */
+.hand-diagram {
+  background: var(--bg);
+  border-radius: 16px;
+  padding: 18px;
+  text-align: center;
+  margin-bottom: 14px;
+  border: 2px solid var(--border);
+}
+.chest-svg { max-width: 200px; width: 100%; }
+
+/* ══ DO / DON'T ══ */
+.do-dont { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+.do-box, .dont-box {
+  border-radius: 14px; padding: 14px;
+  font-size: 13px; font-weight: 700;
+}
+.do-box { background: #e6f4ec; border: 2px solid var(--green); color: #1a5c33; }
+.dont-box { background: #fde8e8; border: 2px solid var(--red); color: #7a0a12; }
+body.dark .do-box { background: #0a2014; color: #80e0a0; }
+body.dark .dont-box { background: #2a0a0e; color: #ff9090; }
+.do-box h4, .dont-box h4 { font-size: 15px; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+.do-box li, .dont-box li { list-style: none; padding: 3px 0; }
+.do-box li::before { content: '✓ '; }
+.dont-box li::before { content: '✗ '; }
+
+/* ══ CHOKING VISUAL ══ */
+.choke-flow { display: grid; gap: 10px; }
+.choke-step {
+  display: flex; gap: 12px; align-items: center;
+  background: var(--bg); border-radius: 14px; padding: 12px;
+  border: 2px solid var(--border);
+}
+.choke-num {
+  min-width: 44px; height: 44px;
+  border-radius: 50%;
+  background: var(--orange);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--display); font-size: 26px; color: #fff;
+  flex-shrink: 0;
+}
+.choke-text { font-size: 14px; font-weight: 700; line-height: 1.4; }
+.choke-text small { color: var(--muted); font-weight: 600; display: block; margin-top: 2px; }
+
+/* ══ AED STEPS ══ */
+.aed-flow { display: grid; gap: 10px; }
+.aed-step {
+  display: flex; gap: 12px; align-items: center;
+  background: var(--bg); border-radius: 14px; padding: 14px;
+  border: 2px solid var(--border);
+}
+.aed-num {
+  min-width: 50px; height: 50px; border-radius: 14px;
+  background: var(--yellow); color: #1a1a2e;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--display); font-size: 30px;
+  flex-shrink: 0;
+}
+.aed-icon { font-size: 26px; }
+.aed-text { font-size: 15px; font-weight: 800; line-height: 1.3; }
+.aed-text small { color: var(--muted); font-weight: 600; font-size: 13px; display: block; margin-top: 2px; }
+
+/* ══ WAITING CARD ══ */
+.waiting-item {
+  display: flex; gap: 12px; align-items: center;
+  padding: 12px 0; border-bottom: 1px solid var(--border);
+}
+.waiting-item:last-child { border-bottom: none; }
+.waiting-icon { font-size: 28px; flex-shrink: 0; }
+.waiting-text { font-size: 14px; font-weight: 700; }
+.waiting-text small { color: var(--muted); font-weight: 600; display: block; font-size: 12px; margin-top: 1px; }
+
+/* ══ SECTION HEADER ══ */
+.sec-header {
+  font-family: var(--display);
+  font-size: 20px;
+  letter-spacing: 1.5px;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin-bottom: 12px;
+  display: flex; align-items: center; gap: 8px;
+}
+.sec-header::after { content: ''; flex: 1; height: 2px; background: var(--border); }
+
+/* ══ CHILD/BABY CARD ══ */
+.age-card {
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: 18px;
+  padding: 14px;
+  margin-bottom: 12px;
+  box-shadow: var(--shadow);
+}
+.age-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--blue);
+  color: #fff; border-radius: 8px;
+  padding: 4px 12px;
+  font-size: 12px; font-weight: 900;
+  letter-spacing: .5px; margin-bottom: 10px;
+}
+
+/* ══ BOTTOM SAFE AREA ══ */
+.bottom-space { height: 30px; }
+
+/* ══ BILINGUAL ══ */
+[data-es] { display: none; }
+body.lang-es [data-en] { display: none; }
+body.lang-es [data-es] { display: inline; }
+body.lang-es [data-es-b] { display: block; }
+[data-en-b] { display: block; }
+body.lang-es [data-en-b] { display: none; }
+
+@media (max-width: 360px) {
+  .big-num { font-size: 56px; }
+  .metro-timer { font-size: 44px; }
+}
+</style>
+</head>
+<body class="lang-en">
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div>
+    <div class="topbar-title">
+      <span data-en>SAVE A LIFE</span>
+      <span data-es>SALVA UNA VIDA</span>
+    </div>
+    <div class="topbar-sub">
+      <span data-en>WHAT TO DO · PUERTO RICO</span>
+      <span data-es>QUÉ HACER · PUERTO RICO</span>
+    </div>
+  </div>
+  <div class="top-controls">
+    <button class="ctrl-btn" onclick="toggleTheme()" id="theme-btn">🌙</button>
+  </div>
+</div>
+
+<!-- LANGUAGE TOGGLE BAR -->
+<div id="lang-bar" style="background:var(--surface);border-bottom:1px solid var(--border);padding:5px 16px;display:flex;justify-content:center;">
+  <div style="display:flex;gap:0;border:1.5px solid var(--red);border-radius:8px;overflow:hidden;">
+    <button id="btn-en" onclick="setLang('en')"
+      style="padding:5px 18px;border:none;background:var(--red);color:#fff;
+      font-family:var(--body);font-size:13px;font-weight:800;cursor:pointer;transition:all .2s;">
+      🇺🇸 EN
+    </button>
+    <button id="btn-es" onclick="setLang('es')"
+      style="padding:5px 18px;border:none;background:transparent;color:var(--red);
+      font-family:var(--body);font-size:13px;font-weight:800;cursor:pointer;transition:all .2s;">
+      🇵🇷 ES
+    </button>
+  </div>
+</div>
+
+<!-- CALL 9-1-1 -->
+<div class="call-bar">
+  <a href="tel:911" class="call-btn">
+    <div class="call-icon">📞</div>
+    <div class="call-text">
+      <div class="call-number">9-1-1</div>
+      <div class="call-label">
+        <span data-en>CALL NOW · EMERGENCY · PUERTO RICO</span>
+        <span data-es>LLAMA YA · EMERGENCIAS · PUERTO RICO</span>
+      </div>
+    </div>
+  </a>
+</div>
+
+<!-- NAV -->
+<div class="nav-wrap">
+  <div class="nav-pills">
+    <button class="nav-pill active" onclick="showPage('cpr')">
+      🫀 <span data-en>CPR</span><span data-es>RCP</span>
+    </button>
+    <button class="nav-pill p-blue" onclick="showPage('kids')">
+      👶 <span data-en>Kids</span><span data-es>Niños</span>
+    </button>
+    <button class="nav-pill p-orange" onclick="showPage('choke')">
+      🫁 <span data-en>Choking</span><span data-es>Atragantamiento</span>
+    </button>
+    <button class="nav-pill p-green" onclick="showPage('aed')">
+      ⚡ AED/DEA
+    </button>
+    <button class="nav-pill" onclick="showPage('wait')">
+      ⏳ <span data-en>While waiting</span><span data-es>Mientras esperas</span>
+    </button>
+  </div>
+</div>
+
+<main>
+
+<!-- ══════════════════ CPR PAGE ══════════════════ -->
+<div id="page-cpr" class="page active">
+
+  <div class="alert-box red" style="margin-top:14px;">
+    <div class="alert-icon">🚨</div>
+    <div>
+      <span data-en><strong>Someone is not breathing and has no pulse.</strong><br>Don't panic. You CAN save their life. Follow these steps.</span>
+      <span data-es><strong>Alguien no respira y no tiene pulso.</strong><br>No entres en pánico. PUEDES salvar su vida. Sigue estos pasos.</span>
+    </div>
+  </div>
+
+  <!-- STEP 1: CHECK -->
+  <div class="step-card">
+    <div class="step-header">
+      <div class="step-number sn-red">1</div>
+      <div class="step-head-text">
+        <div class="step-title">
+          <span data-en>CHECK</span>
+          <span data-es>VERIFICA</span>
+        </div>
+        <div class="step-subtitle">
+          <span data-en>Are they OK?</span>
+          <span data-es>¿Están bien?</span>
+        </div>
+      </div>
+    </div>
+    <div class="step-body">
+      <div class="instr">
+        <div class="instr-icon">👋</div>
+        <div class="instr-text">
+          <span data-en>Tap their shoulders and shout loudly: "Are you OK? Are you OK?"</span>
+          <span data-es>Sacude sus hombros y grita fuerte: "¿Estás bien? ¿Estás bien?"</span>
+        </div>
+      </div>
+      <div class="instr">
+        <div class="instr-icon">👀</div>
+        <div class="instr-text">
+          <span data-en>Look at their chest for 10 seconds — are they breathing?</span>
+          <span data-es>Mira su pecho por 10 segundos — ¿están respirando?</span>
+          <span><span data-en>Occasional gasping = NOT normal breathing → start CPR</span><span data-es>Gasping ocasional = NO es respiración normal → inicia RCP</span></span>
+        </div>
+      </div>
+      <div class="alert-box orange">
+        <div class="alert-icon">⚠️</div>
+        <div data-en><strong>Not responding + not breathing normally?</strong> → Go to Step 2 immediately.</div>
+        <div data-es><strong>¿No responde + no respira con normalidad?</strong> → Ve al Paso 2 inmediatamente.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 2: CALL -->
+  <div class="step-card">
+    <div class="step-header">
+      <div class="step-number sn-red">2</div>
+      <div class="step-head-text">
+        <div class="step-title">
+          <span data-en>CALL 9-1-1</span>
+          <span data-es>LLAMA 9-1-1</span>
+        </div>
+        <div class="step-subtitle">
+          <span data-en>And get an AED/DEA</span>
+          <span data-es>Y consigue un DEA/AED</span>
+        </div>
+      </div>
+    </div>
+    <div class="step-body">
+      <a href="tel:911" style="display:block; background:var(--red); color:#fff; text-align:center; border-radius:14px; padding:16px; text-decoration:none; margin-bottom:12px; font-size:22px; font-weight:900; letter-spacing:1px;">
+        📞 <span data-en>TAP TO CALL 9-1-1</span><span data-es>TOCA PARA LLAMAR 9-1-1</span>
+      </a>
+      <div class="instr">
+        <div class="instr-icon">🗣️</div>
+        <div class="instr-text">
+          <span data-en>If others are nearby, point at someone: <strong>"You! Call 9-1-1!"</strong> and <strong>"You! Get the AED!"</strong></span>
+          <span data-es>Si hay otras personas, señala a alguien: <strong>"¡Tú! ¡Llama al 9-1-1!"</strong> y <strong>"¡Tú! ¡Busca el DEA!"</strong></span>
+        </div>
+      </div>
+      <div class="instr">
+        <div class="instr-icon">🤳</div>
+        <div class="instr-text">
+          <span data-en>If you're alone: call 9-1-1, put on speaker phone, then start CPR.</span>
+          <span data-es>Si estás solo: llama al 9-1-1, pon el altavoz, luego inicia la RCP.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 3: CPR -->
+  <div class="step-card">
+    <div class="step-header">
+      <div class="step-number sn-red">3</div>
+      <div class="step-head-text">
+        <div class="step-title">
+          <span data-en>PUSH HARD &amp; FAST</span>
+          <span data-es>COMPRIME FUERTE Y RÁPIDO</span>
+        </div>
+        <div class="step-subtitle">
+          <span data-en>Chest compressions</span>
+          <span data-es>Compresiones en el pecho</span>
+        </div>
+      </div>
+    </div>
+    <div class="step-body">
+
+      <!-- HAND PLACEMENT DIAGRAM -->
+      <div class="hand-diagram">
+        <svg class="chest-svg" viewBox="0 0 200 180" xmlns="http://www.w3.org/2000/svg">
+          <!-- Body outline -->
+          <ellipse cx="100" cy="110" rx="72" ry="55" fill="#e8edf5" stroke="#c0c8e0" stroke-width="2"/>
+          <!-- Chest bone indicator -->
+          <rect x="88" y="60" width="24" height="80" rx="6" fill="#c8d0e8" stroke="#a0aac0" stroke-width="1.5"/>
+          <!-- Target circle -->
+          <circle cx="100" cy="120" r="22" fill="none" stroke="#c1121f" stroke-width="3" stroke-dasharray="6,3"/>
+          <!-- Hand 1 -->
+          <rect x="78" y="108" width="44" height="18" rx="8" fill="#c1121f" opacity=".9"/>
+          <!-- Hand 2 -->
+          <rect x="82" y="94" width="36" height="18" rx="8" fill="#e63946" opacity=".85"/>
+          <!-- Arrows down -->
+          <text x="100" y="158" text-anchor="middle" font-size="20" fill="#c1121f">↓↓↓</text>
+          <!-- Labels -->
+          <text x="100" y="82" text-anchor="middle" font-size="10" fill="#5a6070" font-weight="bold">STERNUM</text>
+          <text x="100" y="90" text-anchor="middle" font-size="8" fill="#8090b0">ESTERNÓN</text>
+        </svg>
+        <div style="font-size:13px;font-weight:800;color:var(--muted);margin-top:4px;">
+          <span data-en>Center of the chest · Between nipples · Heel of hand</span>
+          <span data-es>Centro del pecho · Entre los pezones · Talón de la mano</span>
+        </div>
+      </div>
+
+      <!-- POSITION INSTRUCTIONS -->
+      <div class="instr">
+        <div class="instr-icon">🙏</div>
+        <div class="instr-text">
+          <span data-en><strong>Place the heel of your hand</strong> on the center of their chest (breastbone). Put your other hand on top. Interlace fingers.</span>
+          <span data-es><strong>Pon el talón de tu mano</strong> en el centro del pecho (esternón). Coloca la otra mano encima. Entrelaza los dedos.</span>
+        </div>
+      </div>
+      <div class="instr">
+        <div class="instr-icon">💪</div>
+        <div class="instr-text">
+          <span data-en><strong>Arms straight. Use your body weight</strong> to push down — hard. Let the chest fully rise back up before the next push.</span>
+          <span data-es><strong>Brazos rectos. Usa el peso de tu cuerpo</strong> para comprimir — fuerte. Deja que el pecho suba completamente antes de la siguiente compresión.</span>
+        </div>
+      </div>
+
+      <!-- METRICS -->
+      <div class="metrics-row">
+        <div class="metric-box">
+          <div class="metric-val">100–120</div>
+          <div class="metric-unit"><span data-en>PUSHES / MIN</span><span data-es>COMPRIMES / MIN</span></div>
+        </div>
+        <div class="metric-box">
+          <div class="metric-val">2"</div>
+          <div class="metric-unit"><span data-en>DEEP (5 cm)</span><span data-es>PROFUNDO (5 cm)</span></div>
+        </div>
+      </div>
+
+      <!-- METRONOME TIMER -->
+      <div class="metro-card">
+        <div class="metro-label">
+          <span data-en>CPR TIMER + METRONOME</span>
+          <span data-es>TEMPORIZADOR + METRÓNOMO</span>
+        </div>
+        <div class="pulse-dot" id="pulse-dot"></div>
+        <div class="metro-timer" id="metro-timer">00:00</div>
+        <div class="metro-bpm">♪ 110 bpm — <span data-en>Stayin' Alive (Bee Gees)</span><span data-es>Stayin' Alive (Bee Gees)</span></div>
+        <div class="btn-row">
+          <button class="big-btn bb-white" id="cpr-start-btn" onclick="toggleCPR()">
+            ▶ <span data-en>START CPR</span><span data-es>INICIAR RCP</span>
+          </button>
+          <button class="big-btn bb-ghost" onclick="resetCPR()">↺</button>
+        </div>
+      </div>
+
+      <!-- BREATHS OPTIONAL -->
+      <div class="sec-header">
+        <span data-en>Rescue Breaths</span><span data-es>Ventilaciones</span>
+      </div>
+
+      <div class="alert-box green">
+        <div class="alert-icon">✅</div>
+        <div>
+          <span data-en><strong>Hands-Only CPR works!</strong> If you're not trained or uncomfortable giving breaths — just keep pushing on the chest. This is the most important part.</span>
+          <span data-es><strong>¡La RCP solo con manos funciona!</strong> Si no estás entrenado o no te sientes cómodo dando respiraciones — sigue comprimiendo. Eso es lo más importante.</span>
+        </div>
+      </div>
+
+      <div class="step-card" style="margin-bottom:0;border-color:var(--green);">
+        <div class="step-body" style="padding-top:14px;">
+          <div style="font-size:15px;font-weight:800;color:var(--green);margin-bottom:10px;">
+            <span data-en>If you know how to give breaths: 30 pushes → 2 breaths</span>
+            <span data-es>Si sabes cómo dar respiraciones: 30 compresiones → 2 respiraciones</span>
+          </div>
+          <div class="instr">
+            <div class="instr-icon">🤚</div>
+            <div class="instr-text">
+              <span data-en>Tilt head back, lift the chin up to open the airway.</span>
+              <span data-es>Inclina la cabeza hacia atrás, levanta el mentón para abrir la vía aérea.</span>
+            </div>
+          </div>
+          <div class="instr">
+            <div class="instr-icon">💨</div>
+            <div class="instr-text">
+              <span data-en>Pinch their nose shut. Seal your mouth over theirs. Breathe in for 1 second — watch chest rise.</span>
+              <span data-es>Pellizca su nariz. Sella tu boca sobre la suya. Sopla durante 1 segundo — ve cómo sube el pecho.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DO / DON'T -->
+  <div class="do-dont">
+    <div class="do-box">
+      <h4>✅ <span data-en>DO</span><span data-es>SÍ</span></h4>
+      <ul>
+        <li data-en>Push HARD</li><li data-es>Comprimir FUERTE</li>
+        <li data-en>Push FAST</li><li data-es>Comprimir RÁPIDO</li>
+        <li data-en>Let chest rise back</li><li data-es>Dejar que el pecho suba</li>
+        <li data-en>Keep going</li><li data-es>No parar</li>
+        <li data-en>Use your weight</li><li data-es>Usar tu peso</li>
+      </ul>
+    </div>
+    <div class="dont-box">
+      <h4>🚫 <span data-en>DON'T</span><span data-es>NO</span></h4>
+      <ul>
+        <li data-en>Push too gently</li><li data-es>Comprimir suave</li>
+        <li data-en>Lean on chest</li><li data-es>Apoyarte en el pecho</li>
+        <li data-en>Stop to check</li><li data-es>Parar a revisar</li>
+        <li data-en>Panic</li><li data-es>Entrar en pánico</li>
+        <li data-en>Give up</li><li data-es>Rendirse</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="alert-box blue">
+    <div class="alert-icon">💡</div>
+    <div>
+      <span data-en><strong>Soft surface?</strong> You can do CPR on a bed or floor — do NOT waste time moving the person. Start immediately!</span>
+      <span data-es><strong>¿Superficie blanda?</strong> Puedes hacer RCP en una cama o el suelo — NO pierdas tiempo moviendo a la persona. ¡Empieza ya!</span>
+    </div>
+  </div>
+
+  <!-- STEP 4: AED -->
+  <div class="step-card">
+    <div class="step-header">
+      <div class="step-number sn-yellow">4</div>
+      <div class="step-head-text">
+        <div class="step-title" style="color:var(--text);">
+          <span data-en>USE THE AED</span>
+          <span data-es>USA EL DEA</span>
+        </div>
+        <div class="step-subtitle">
+          <span data-en>If one arrives — use it!</span>
+          <span data-es>Si llega uno — ¡úsalo!</span>
+        </div>
+      </div>
+    </div>
+    <div class="step-body">
+      <div class="alert-box green">
+        <div class="alert-icon">✅</div>
+        <div>
+          <span data-en>The AED will <strong>talk you through every step</strong> with voice instructions. You cannot do it wrong. Just follow the voice.</span>
+          <span data-es>El DEA te <strong>guiará en cada paso</strong> con instrucciones de voz. No puedes hacerlo mal. Solo sigue la voz.</span>
+        </div>
+      </div>
+      <div class="instr">
+        <div class="instr-icon">⚡</div>
+        <div class="instr-text">
+          <span data-en>→ See the full AED guide in the <strong>AED/DEA</strong> tab above.</span>
+          <span data-es>→ Ve la guía completa del DEA en la pestaña <strong>AED/DEA</strong> de arriba.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══════════════════ KIDS PAGE ══════════════════ -->
+<div id="page-kids" class="page">
+
+  <div class="alert-box blue" style="margin-top:14px;">
+    <div class="alert-icon">👶</div>
+    <div>
+      <span data-en><strong>Children usually collapse from suffocation or drowning, not heart problems.</strong> That's why rescue breaths matter even more for them.</span>
+      <span data-es><strong>Los niños colapsan generalmente por asfixia o ahogamiento, no por problemas cardíacos.</strong> Por eso las respiraciones de rescate son aún más importantes en ellos.</span>
+    </div>
+  </div>
+
+  <!-- CHILD (1-8 years) -->
+  <div class="age-card">
+    <div class="age-badge">🧒 <span data-en>CHILD — 1 to 8 years old</span><span data-es>NIÑO — 1 a 8 años</span></div>
+
+    <div class="instr">
+      <div class="instr-icon">📞</div>
+      <div class="instr-text">
+        <span data-en><strong>Call 9-1-1 first</strong> (or send someone), then start CPR.</span>
+        <span data-es><strong>Llama al 9-1-1 primero</strong> (o envía a alguien), luego inicia la RCP.</span>
+      </div>
+    </div>
+
+    <div class="instr">
+      <div class="instr-icon">💨</div>
+      <div class="instr-text">
+        <span data-en><strong>Give 2 gentle rescue breaths first</strong> if drowning or choking caused the collapse. Then start compressions.</span>
+        <span data-es><strong>Da 2 respiraciones de rescate suaves primero</strong> si el colapso fue por ahogamiento o asfixia. Luego inicia compresiones.</span>
+      </div>
+    </div>
+
+    <div class="instr">
+      <div class="instr-icon">🤚</div>
+      <div class="instr-text">
+        <span data-en><strong>Use 1 or 2 hands</strong> on the center of the chest. Push down about <strong>2 inches (5 cm)</strong>.</span>
+        <span data-es><strong>Usa 1 o 2 manos</strong> en el centro del pecho. Comprime unas <strong>2 pulgadas (5 cm)</strong>.</span>
+      </div>
+    </div>
+
+    <div class="metrics-row">
+      <div class="metric-box">
+        <div class="metric-val">30:2</div>
+        <div class="metric-unit"><span data-en>ALONE</span><span data-es>SOLO</span></div>
+      </div>
+      <div class="metric-box">
+        <div class="metric-val">15:2</div>
+        <div class="metric-unit"><span data-en>WITH HELP</span><span data-es>CON AYUDA</span></div>
+      </div>
+      <div class="metric-box">
+        <div class="metric-val">2"</div>
+        <div class="metric-unit"><span data-en>DEEP</span><span data-es>PROF.</span></div>
+      </div>
+    </div>
+
+    <div class="instr">
+      <div class="instr-icon">🏃</div>
+      <div class="instr-text">
+        <span data-en>If you're alone with no phone: <strong>do 2 minutes of CPR first, then leave to call 9-1-1.</strong></span>
+        <span data-es>Si estás solo sin teléfono: <strong>haz 2 minutos de RCP primero, luego sal a llamar al 9-1-1.</strong></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- BABY -->
+  <div class="age-card" style="border-color:var(--blue);">
+    <div class="age-badge" style="background:var(--blue);">👶 <span data-en>BABY — under 1 year old</span><span data-es>BEBÉ — menos de 1 año</span></div>
+
+    <div class="alert-box blue">
+      <div class="alert-icon">⚠️</div>
+      <div>
+        <span data-en>Babies are fragile. Blow <strong>very gently</strong>. Push <strong>with 2 thumbs</strong> — NOT with full hand weight.</span>
+        <span data-es>Los bebés son frágiles. Sopla <strong>muy suavemente</strong>. Comprime <strong>con 2 pulgares</strong> — NO con el peso completo de la mano.</span>
+      </div>
+    </div>
+
+    <div class="instr">
+      <div class="instr-icon">💨</div>
+      <div class="instr-text">
+        <span data-en><strong>Give 2 gentle rescue breaths.</strong> Cover baby's mouth AND nose with your mouth. Tiny puffs — just enough to see chest rise.</span>
+        <span data-es><strong>Da 2 respiraciones de rescate suaves.</strong> Cubre la boca Y la nariz del bebé con tu boca. Soplos pequeños — solo los necesarios para ver el pecho subir.</span>
+      </div>
+    </div>
+
+    <div class="hand-diagram">
+      <svg viewBox="0 0 200 140" style="max-width:180px;width:100%;" xmlns="http://www.w3.org/2000/svg">
+        <!-- Baby body -->
+        <ellipse cx="100" cy="80" rx="60" ry="42" fill="#e8edf5" stroke="#c0c8e0" stroke-width="2"/>
+        <!-- Two thumbs -->
+        <ellipse cx="80" cy="80" rx="12" ry="8" fill="#1565c0" opacity=".85" transform="rotate(-10,80,80)"/>
+        <ellipse cx="120" cy="80" rx="12" ry="8" fill="#1565c0" opacity=".85" transform="rotate(10,120,80)"/>
+        <!-- Arrows -->
+        <text x="100" y="118" text-anchor="middle" font-size="16" fill="#1565c0">↓</text>
+        <!-- Label -->
+        <text x="100" y="26" text-anchor="middle" font-size="11" fill="#5a6070" font-weight="bold">2 THUMBS / 2 PULGARES</text>
+        <text x="100" y="38" text-anchor="middle" font-size="9" fill="#8090b0">CENTER OF CHEST / CENTRO DEL PECHO</text>
+      </svg>
+    </div>
+
+    <div class="instr">
+      <div class="instr-icon">👍</div>
+      <div class="instr-text">
+        <span data-en><strong>2-thumb technique:</strong> Place 2 thumbs side by side on the center of the chest. Fingers wrap around the baby's back. Push down <strong>1.5 inches (4 cm)</strong>.</span>
+        <span data-es><strong>Técnica de 2 pulgares:</strong> Coloca 2 pulgares juntos en el centro del pecho. Los dedos rodean la espalda del bebé. Comprime <strong>1.5 pulgadas (4 cm)</strong>.</span>
+      </div>
+    </div>
+
+    <div class="metrics-row">
+      <div class="metric-box">
+        <div class="metric-val">30:2</div>
+        <div class="metric-unit"><span data-en>ALONE</span><span data-es>SOLO</span></div>
+      </div>
+      <div class="metric-box">
+        <div class="metric-val">15:2</div>
+        <div class="metric-unit"><span data-en>WITH HELP</span><span data-es>CON AYUDA</span></div>
+      </div>
+      <div class="metric-box">
+        <div class="metric-val">1.5"</div>
+        <div class="metric-unit"><span data-en>DEEP (4 cm)</span><span data-es>PROF. (4 cm)</span></div>
+      </div>
+    </div>
+
+    <div class="instr">
+      <div class="instr-icon">🏃</div>
+      <div class="instr-text">
+        <span data-en>If alone: <strong>2 minutes of CPR first</strong> before leaving to call 9-1-1. Take the baby with you if possible.</span>
+        <span data-es>Si estás solo: <strong>2 minutos de RCP primero</strong> antes de salir a llamar al 9-1-1. Llévate al bebé si es posible.</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="alert-box green">
+    <div class="alert-icon">✅</div>
+    <div>
+      <span data-en>AED for babies: Use <strong>pediatric pads</strong> if available. If not, the adult AED can still be used — it may save their life.</span>
+      <span data-es>DEA para bebés: Usa <strong>parches pediátricos</strong> si están disponibles. Si no, el DEA adulto puede usarse de todas formas — puede salvarles la vida.</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════ CHOKING PAGE ══════════════════ -->
+<div id="page-choke" class="page">
+
+  <div class="alert-box orange" style="margin-top:14px;">
+    <div class="alert-icon">🫁</div>
+    <div>
+      <span data-en><strong>Someone is choking if they:</strong> can't speak, can't breathe, are grabbing their throat, turn blue/purple.</span>
+      <span data-es><strong>Alguien se está atragantando si:</strong> no puede hablar, no puede respirar, se agarra la garganta, se pone azul/morado.</span>
+    </div>
+  </div>
+
+  <!-- ADULT CHOKING -->
+  <div class="sec-header">
+    <span data-en>Adult or Child &gt;1 year</span><span data-es>Adulto o Niño &gt;1 año</span>
+  </div>
+
+  <div class="choke-flow">
+    <div class="choke-step">
+      <div class="choke-num">1</div>
+      <div class="choke-text">
+        <span data-en><strong>Can they cough?</strong> → Encourage them to keep coughing. Do NOT interfere. A strong cough is the best way to clear the blockage.</span>
+        <span data-es><strong>¿Pueden toser?</strong> → Anímales a seguir tosiendo. NO interfieras. Una tos fuerte es la mejor manera de despejar el bloqueo.</span>
+      </div>
+    </div>
+
+    <div class="choke-step">
+      <div class="choke-num">2</div>
+      <div class="choke-text">
+        <span data-en><strong>Weak cough or can't breathe?</strong> → Lean them forward. Give <strong>5 firm back blows</strong> with the heel of your hand between their shoulder blades.</span>
+        <span data-es><strong>¿Tos débil o no puede respirar?</strong> → Inclínalos hacia adelante. Da <strong>5 golpes firmes en la espalda</strong> con el talón de tu mano entre los omóplatos.</span>
+        <small><span data-en>Open palm — firm — between shoulder blades</span><span data-es>Palma abierta — firme — entre los omóplatos</span></small>
+      </div>
+    </div>
+
+    <div class="choke-step">
+      <div class="choke-num">3</div>
+      <div class="choke-text">
+        <span data-en>Still choking? → <strong>5 abdominal thrusts (Heimlich)</strong>: Stand behind them, make a fist below the breastbone, cover with other hand, thrust <strong>IN and UP</strong>.</span>
+        <span data-es>¿Sigue atragantado? → <strong>5 compresiones abdominales (Heimlich)</strong>: Párate detrás, haz un puño bajo el esternón, cubre con la otra mano, empuja <strong>ADENTRO y ARRIBA</strong>.</span>
+        <small><span data-en>Alternate: 5 back blows + 5 abdominal thrusts until cleared</span><span data-es>Alterna: 5 golpes espalda + 5 compresiones abdominales hasta despejar</span></small>
+      </div>
+    </div>
+
+    <div class="choke-step">
+      <div class="choke-num">4</div>
+      <div class="choke-text">
+        <span data-en>If they <strong>lose consciousness</strong> → Lower them to the ground carefully. <strong>Call 9-1-1</strong> and start CPR. Before each breath, check mouth and remove object if visible.</span>
+        <span data-es>Si <strong>pierden la consciencia</strong> → Bájalos al suelo con cuidado. <strong>Llama al 9-1-1</strong> e inicia RCP. Antes de cada respiración, revisa la boca y saca el objeto si es visible.</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="alert-box orange" style="margin-top:12px;">
+    <div class="alert-icon">🤰</div>
+    <div>
+      <span data-en><strong>Pregnant or very obese?</strong> Skip abdominal thrusts. Use <strong>chest thrusts</strong> instead: same position as CPR compressions, pushing on the chest.</span>
+      <span data-es><strong>¿Embarazada u obesidad severa?</strong> Omite las compresiones abdominales. Usa <strong>compresiones en el pecho</strong>: misma posición que la RCP, empujando en el pecho.</span>
+    </div>
+  </div>
+
+  <!-- BABY CHOKING -->
+  <div class="sec-header" style="margin-top:20px;">
+    <span data-en>Baby choking (under 1 year)</span><span data-es>Bebé atragantado (menos de 1 año)</span>
+  </div>
+
+  <div class="alert-box red">
+    <div class="alert-icon">🚨</div>
+    <div>
+      <span data-en><strong>Never do abdominal thrusts on a baby!</strong> Use back blows + chest thrusts instead.</span>
+      <span data-es><strong>¡Nunca hagas compresiones abdominales a un bebé!</strong> Usa golpes en la espalda + compresiones en el pecho.</span>
+    </div>
+  </div>
+
+  <div class="choke-flow">
+    <div class="choke-step">
+      <div class="choke-num">1</div>
+      <div class="choke-text">
+        <span data-en>Hold baby face-down on your forearm, head lower than body. Give <strong>5 firm back blows</strong> with the heel of your hand between shoulder blades.</span>
+        <span data-es>Sostén al bebé boca abajo en tu antebrazo, cabeza más baja que el cuerpo. Da <strong>5 golpes firmes en la espalda</strong> con el talón de tu mano entre los omóplatos.</span>
+      </div>
+    </div>
+    <div class="choke-step">
+      <div class="choke-num">2</div>
+      <div class="choke-text">
+        <span data-en>Turn baby face-up on your forearm. Give <strong>5 chest thrusts</strong> with 2 fingers on the center of the chest, just below nipple level.</span>
+        <span data-es>Gira al bebé boca arriba en tu antebrazo. Da <strong>5 compresiones en el pecho</strong> con 2 dedos en el centro del pecho, justo debajo del nivel de los pezones.</span>
+      </div>
+    </div>
+    <div class="choke-step">
+      <div class="choke-num">3</div>
+      <div class="choke-text">
+        <span data-en>Alternate 5 back blows + 5 chest thrusts. Check mouth between each — remove object only if clearly visible.</span>
+        <span data-es>Alterna 5 golpes en espalda + 5 compresiones en pecho. Revisa la boca entre cada ciclo — extrae el objeto solo si es claramente visible.</span>
+      </div>
+    </div>
+    <div class="choke-step">
+      <div class="choke-num">4</div>
+      <div class="choke-text">
+        <span data-en>Unconscious baby → Call 9-1-1. Start infant CPR (2 thumbs technique, see Kids tab).</span>
+        <span data-es>Bebé inconsciente → Llama al 9-1-1. Inicia RCP de bebé (técnica 2 pulgares, ver pestaña Niños).</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════ AED PAGE ══════════════════ -->
+<div id="page-aed" class="page">
+
+  <div class="alert-box green" style="margin-top:14px;">
+    <div class="alert-icon">✅</div>
+    <div>
+      <span data-en><strong>AEDs are safe and easy to use. The machine does the work.</strong> It will ONLY shock if it detects a dangerous heart rhythm. You cannot accidentally harm someone.</span>
+      <span data-es><strong>Los DEAs son seguros y fáciles de usar. La máquina hace el trabajo.</strong> Solo dará descarga si detecta un ritmo cardíaco peligroso. No puedes hacerle daño a nadie accidentalmente.</span>
+    </div>
+  </div>
+
+  <div class="aed-flow">
+    <div class="aed-step">
+      <div class="aed-num" style="background:var(--yellow);">1</div>
+      <div style="font-size:28px;padding:0 4px;">🔋</div>
+      <div class="aed-text">
+        <span data-en><strong>POWER ON</strong></span>
+        <span data-es><strong>ENCENDER</strong></span>
+        <small>
+          <span data-en>Press the button or open the lid. It will start talking to you. Listen and follow every instruction.</span>
+          <span data-es>Presiona el botón o abre la tapa. Empezará a hablar. Escucha y sigue cada instrucción.</span>
+        </small>
+      </div>
+    </div>
+
+    <div class="aed-step">
+      <div class="aed-num" style="background:var(--yellow);">2</div>
+      <div style="font-size:28px;padding:0 4px;">🩹</div>
+      <div class="aed-text">
+        <span data-en><strong>ATTACH PADS</strong></span>
+        <span data-es><strong>COLOCAR PARCHES</strong></span>
+        <small>
+          <span data-en>Peel off the sticky pads. Place exactly as shown in the diagram on the pad package: one on the upper right chest, one on the lower left side.</span>
+          <span data-es>Despega los parches adhesivos. Colócalos exactamente como muestra el diagrama en el paquete: uno en la parte superior derecha del pecho, otro en el lado inferior izquierdo.</span>
+        </small>
+      </div>
+    </div>
+
+    <div class="aed-step">
+      <div class="aed-num" style="background:var(--yellow);">3</div>
+      <div style="font-size:28px;padding:0 4px;">🔍</div>
+      <div class="aed-text">
+        <span data-en><strong>ANALYZE — STAND CLEAR</strong></span>
+        <span data-es><strong>ANÁLISIS — APARTARSE</strong></span>
+        <small>
+          <span data-en>The AED analyzes the heart. Shout <strong>"Stand clear! Don't touch them!"</strong> and make sure NOBODY is touching the person.</span>
+          <span data-es>El DEA analiza el corazón. Grita <strong>"¡Apartense! ¡Nadie los toque!"</strong> y asegúrate de que NADIE esté tocando a la persona.</span>
+        </small>
+      </div>
+    </div>
+
+    <div class="aed-step">
+      <div class="aed-num" style="background:var(--yellow);">4</div>
+      <div style="font-size:28px;padding:0 4px;">⚡</div>
+      <div class="aed-text">
+        <span data-en><strong>SHOCK (if advised)</strong></span>
+        <span data-es><strong>DESCARGA (si se indica)</strong></span>
+        <small>
+          <span data-en>If the AED says "Shock advised" — press the blinking shock button. Make sure no one is touching the person!</span>
+          <span data-es>Si el DEA dice "Se recomienda descarga" — presiona el botón parpadeante de descarga. ¡Asegúrate de que nadie toque a la persona!</span>
+        </small>
+      </div>
+    </div>
+
+    <div class="aed-step">
+      <div class="aed-num" style="background:var(--green);">5</div>
+      <div style="font-size:28px;padding:0 4px;">🫀</div>
+      <div class="aed-text">
+        <span data-en><strong>RESUME CPR IMMEDIATELY</strong></span>
+        <span data-es><strong>REANUDAR RCP INMEDIATAMENTE</strong></span>
+        <small>
+          <span data-en>After the shock, start chest compressions again RIGHT AWAY. Do NOT stop to check for a pulse. The AED will tell you when to pause.</span>
+          <span data-es>Tras la descarga, reanuda las compresiones ENSEGUIDA. NO pares a revisar el pulso. El DEA te dirá cuándo parar.</span>
+        </small>
+      </div>
+    </div>
+  </div>
+
+  <div class="alert-box blue" style="margin-top:4px;">
+    <div class="alert-icon">📍</div>
+    <div>
+      <span data-en><strong>Where to find an AED in Puerto Rico:</strong> Shopping malls, airports, government buildings, pharmacies, gyms, schools. Ask anyone nearby — shout "Is there an AED/DEA here?"</span>
+      <span data-es><strong>¿Dónde encontrar un DEA en Puerto Rico?</strong> Centros comerciales, aeropuertos, edificios de gobierno, farmacias, gimnasios, escuelas. Pregunta a alguien cercano — grita "¿Hay un DEA aquí?"</span>
+    </div>
+  </div>
+
+  <div class="alert-box orange">
+    <div class="alert-icon">👧</div>
+    <div>
+      <span data-en><strong>Children:</strong> If the AED has pediatric pads (smaller size, often yellow), use them for children under 8 or under 55 lbs. No pediatric pads? Adult pads are OK.</span>
+      <span data-es><strong>Niños:</strong> Si el DEA tiene parches pediátricos (más pequeños, frecuentemente amarillos), úsalos en niños menores de 8 años o menos de 55 libras. ¿No hay pediátricos? Los adultos son aceptables.</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════ WAITING PAGE ══════════════════ -->
+<div id="page-wait" class="page">
+
+  <div class="alert-box green" style="margin-top:14px;">
+    <div class="alert-icon">🚑</div>
+    <div>
+      <span data-en><strong>Help is on the way!</strong> Keep doing CPR until paramedics arrive and take over. Do not stop unless the person starts breathing normally.</span>
+      <span data-es><strong>¡La ayuda está en camino!</strong> Sigue haciendo RCP hasta que lleguen los paramédicos y tomen el control. No pares a menos que la persona empiece a respirar con normalidad.</span>
+    </div>
+  </div>
+
+  <div class="step-card">
+    <div class="step-body" style="padding-top:14px;">
+      <div class="waiting-item">
+        <div class="waiting-icon">🫀</div>
+        <div class="waiting-text">
+          <span data-en><strong>Keep doing CPR</strong> without stopping.</span>
+          <span data-es><strong>Sigue haciendo RCP</strong> sin parar.</span>
+          <small><span data-en>Switch with someone every 2 minutes if possible — CPR is tiring.</span><span data-es>Túrnate con alguien cada 2 minutos si es posible — la RCP es agotadora.</span></small>
+        </div>
+      </div>
+      <div class="waiting-item">
+        <div class="waiting-icon">🗣️</div>
+        <div class="waiting-text">
+          <span data-en><strong>Stay on the phone</strong> with 9-1-1.</span>
+          <span data-es><strong>Permanece en el teléfono</strong> con el 9-1-1.</span>
+          <small><span data-en>The dispatcher can guide you and will tell you when EMS arrives.</span><span data-es>El despachador puede guiarte y te dirá cuándo llega el CEMPR.</span></small>
+        </div>
+      </div>
+      <div class="waiting-item">
+        <div class="waiting-icon">🚪</div>
+        <div class="waiting-text">
+          <span data-en><strong>Send someone to the entrance</strong> to guide the ambulance.</span>
+          <span data-es><strong>Envía a alguien a la entrada</strong> para guiar a la ambulancia.</span>
+          <small><span data-en>Every second saved getting in counts.</span><span data-es>Cada segundo que se ahorra en la entrada cuenta.</span></small>
+        </div>
+      </div>
+      <div class="waiting-item">
+        <div class="waiting-icon">🧘</div>
+        <div class="waiting-text">
+          <span data-en><strong>Keep calm.</strong> Breathe. You are doing the right thing.</span>
+          <span data-es><strong>Mantén la calma.</strong> Respira. Estás haciendo lo correcto.</span>
+          <small><span data-en>Your actions right now are the most important thing happening.</span><span data-es>Lo que estás haciendo ahora mismo es lo más importante.</span></small>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- IF THEY RECOVER -->
+  <div class="sec-header">
+    <span data-en>If they start breathing</span><span data-es>Si empiezan a respirar</span>
+  </div>
+
+  <div class="step-card" style="border-color:var(--green);">
+    <div class="step-body" style="padding-top:14px;">
+      <div class="alert-box green" style="margin-bottom:12px;">
+        <div class="alert-icon">✅</div>
+        <div>
+          <span data-en><strong>Signs they are recovering:</strong> normal breathing, movement, coughing, opening eyes.</span>
+          <span data-es><strong>Señales de que se están recuperando:</strong> respiración normal, movimiento, tos, apertura de ojos.</span>
+        </div>
+      </div>
+      <div class="waiting-item">
+        <div class="waiting-icon">🔄</div>
+        <div class="waiting-text">
+          <span data-en><strong>Recovery position</strong> if they are unconscious but breathing:</span>
+          <span data-es><strong>Posición lateral de seguridad</strong> si están inconscientes pero respiran:</span>
+          <small><span data-en>Roll them onto their side. Top knee bent forward to stabilize. Head tilted back slightly to keep airway open.</span><span data-es>Gíralos de lado. Rodilla de arriba doblada hacia adelante para estabilizar. Cabeza ligeramente inclinada hacia atrás para mantener la vía aérea abierta.</span></small>
+        </div>
+      </div>
+      <div class="waiting-item">
+        <div class="waiting-icon">👁️</div>
+        <div class="waiting-text">
+          <span data-en><strong>Watch them</strong> until paramedics arrive.</span>
+          <span data-es><strong>Obsérvales</strong> hasta que lleguen los paramédicos.</span>
+          <small><span data-en>If they stop breathing again, restart CPR immediately.</span><span data-es>Si dejan de respirar de nuevo, reinicia la RCP inmediatamente.</span></small>
+        </div>
+      </div>
+      <div class="waiting-item">
+        <div class="waiting-icon">🌡️</div>
+        <div class="waiting-text">
+          <span data-en><strong>Keep them warm</strong> with a blanket or jacket.</span>
+          <span data-es><strong>Mantenlos abrigados</span></strong> con una manta o chaqueta.
+          <small><span data-en>But don't move them unnecessarily.</span><span data-es>Pero no los muevas innecesariamente.</span></small>
+        </div>
+      </div>
+      <div class="waiting-item" style="border:none;">
+        <div class="waiting-icon">✋</div>
+        <div class="waiting-text">
+          <span data-en><strong>Do not give food or water.</strong></span>
+          <span data-es><strong>No les des comida ni agua.</strong></span>
+          <small><span data-en>Even if they ask for it.</span><span data-es>Aunque lo pidan.</span></small>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AFTER -->
+  <div class="alert-box blue">
+    <div class="alert-icon">💙</div>
+    <div>
+      <span data-en><strong>You did something extraordinary.</strong> Witnessing a cardiac emergency is traumatic. It's normal to feel shaken. Talk to someone you trust afterward.</span>
+      <span data-es><strong>Hiciste algo extraordinario.</strong> Presenciar una emergencia cardíaca es traumático. Es normal sentirse afectado. Habla con alguien de confianza después.</span>
+    </div>
+  </div>
+
+</div>
+
+<div class="bottom-space"></div>
+</main>
+
+<script>
+// THEME
+function toggleTheme() {
+  document.body.classList.toggle('dark');
+  document.getElementById('theme-btn').textContent = document.body.classList.contains('dark') ? '☀️' : '🌙';
+}
+
+// LANGUAGE
+let lang = 'en';
+function setLang(l) {
+  lang = l;
+  document.body.classList.toggle('lang-es', lang === 'es');
+  // Update button styles
+  const enBtn = document.getElementById('btn-en');
+  const esBtn = document.getElementById('btn-es');
+  if (lang === 'es') {
+    enBtn.style.background = 'transparent';
+    enBtn.style.color = 'var(--red)';
+    esBtn.style.background = 'var(--red)';
+    esBtn.style.color = '#fff';
+  } else {
+    enBtn.style.background = 'var(--red)';
+    enBtn.style.color = '#fff';
+    esBtn.style.background = 'transparent';
+    esBtn.style.color = 'var(--red)';
+  }
+}
+
+// PAGES
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-pill').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  const idx = {cpr:0, kids:1, choke:2, aed:3, wait:4};
+  document.querySelectorAll('.nav-pill')[idx[id]].classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+// CPR TIMER + METRONOME
+let cprRunning = false;
+let cprInterval = null, cprSec = 0;
+let audioCtx = null;
+let metroInterval = null;
+
+const pad = n => n < 10 ? '0'+n : ''+n;
+
+function toggleCPR() {
+  if (!cprRunning) {
+    cprRunning = true;
+    document.getElementById('cpr-start-btn').innerHTML = '⏸ ' + (lang === 'en' ? 'PAUSE' : 'PAUSA');
+    document.getElementById('cpr-start-btn').style.background = '#ffbe0b';
+    document.getElementById('cpr-start-btn').style.color = '#1a1a2e';
+    // Timer
+    cprInterval = setInterval(() => {
+      cprSec++;
+      document.getElementById('metro-timer').textContent = pad(Math.floor(cprSec/60)) + ':' + pad(cprSec%60);
+    }, 1000);
+    // Metronome
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    beatClick();
+    metroInterval = setInterval(beatClick, 60000/110);
+  } else {
+    cprRunning = false;
+    document.getElementById('cpr-start-btn').innerHTML = '▶ ' + (lang === 'en' ? 'RESUME CPR' : 'REANUDAR RCP');
+    document.getElementById('cpr-start-btn').style.background = '#fff';
+    document.getElementById('cpr-start-btn').style.color = '#c1121f';
+    clearInterval(cprInterval);
+    clearInterval(metroInterval);
+    if (audioCtx) { audioCtx.close(); audioCtx = null; }
+  }
+}
+
+function resetCPR() {
+  cprRunning = false;
+  clearInterval(cprInterval); clearInterval(metroInterval);
+  if (audioCtx) { audioCtx.close(); audioCtx = null; }
+  cprSec = 0;
+  document.getElementById('metro-timer').textContent = '00:00';
+  document.getElementById('cpr-start-btn').innerHTML = '▶ ' + (lang === 'en' ? 'START CPR' : 'INICIAR RCP');
+  document.getElementById('cpr-start-btn').style.background = '#fff';
+  document.getElementById('cpr-start-btn').style.color = '#c1121f';
+}
+
+function beatClick() {
+  if (!audioCtx) return;
+  // Visual flash
+  const dot = document.getElementById('pulse-dot');
+  dot.classList.add('flash');
+  setTimeout(() => dot.classList.remove('flash'), 80);
+  // Sound
+  const o = audioCtx.createOscillator();
+  const g = audioCtx.createGain();
+  o.connect(g); g.connect(audioCtx.destination);
+  o.frequency.value = 900; o.type = 'sine';
+  g.gain.setValueAtTime(0.35, audioCtx.currentTime);
+  g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.07);
+  o.start(audioCtx.currentTime); o.stop(audioCtx.currentTime + 0.07);
+}
+</script>
+</body>
+</html>
