@@ -1317,6 +1317,83 @@ function beatClick() {
   g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.07);
   o.start(audioCtx.currentTime); o.stop(audioCtx.currentTime + 0.07);
 }
+
+// ══ ACRONYMS ══
+const ACR_PUB = {
+  'CPR':   {full:'Cardiopulmonary Resuscitation', es:'Reanimación Cardiopulmonar — pushing on the chest to keep blood flowing when the heart stops. / Empujar en el pecho para mantener la sangre circulando cuando el corazón se para.'},
+  'RCP':   {full:'Reanimación CardioPublmonar', es:'Cardiopulmonary Resuscitation (CPR) — comprimir el pecho para mantener la circulación cuando el corazón deja de latir. / Chest compressions to keep circulation going.'},
+  'AED':   {full:'Automated External Defibrillator', es:'The life-saving machine that analyzes the heart rhythm and can give an electric shock to restart it. It talks and guides you step by step. / La máquina que analiza el ritmo cardíaco y da una descarga eléctrica si hace falta. ¡Te habla y te guía!'},
+  'DEA':   {full:'Desfibrilador Externo Automático', es:'Automated External Defibrillator (AED) — analiza el ritmo del corazón y da una descarga eléctrica si es necesario. ¡Habla y te guía! / Analyzes heart rhythm and delivers a shock if needed.'},
+  'CEMPR': {full:'Cuerpo de Emergencias Médicas de Puerto Rico', es:'Puerto Rico Emergency Medical Services — the paramedics and EMTs who respond when you call 9-1-1. / Los paramédicos y técnicos de emergencias de Puerto Rico. ¡Son los héroes de las calles! Llama al 9-1-1.'},
+  'EMS':   {full:'Emergency Medical Services', es:'Emergency Medical Services — the paramedics, EMTs and ambulances. In Puerto Rico: CEMPR. Call 9-1-1 to reach them. / Servicios de Emergencias Médicas. En Puerto Rico: CEMPR. Llama al 9-1-1.'},
+  'ROSC':  {full:'Return of Spontaneous Circulation', es:'When the heart starts beating on its own again after CPR — the goal of every resuscitation. Signs: normal breathing, movement, coughing. / Cuando el corazón vuelve a latir solo tras la RCP. Señales: respiración normal, movimiento, tos.'},
+  'BLS':   {full:'Basic Life Support', es:'Basic Life Support — the first aid steps anyone can learn: check the person, call 9-1-1, do chest compressions, use the AED. / Los pasos básicos de reanimación que cualquier persona puede aprender.'},
+  'PLS':   {full:'Posición Lateral de Seguridad', es:'Recovery Position — rolling an unconscious but breathing person onto their side so they don\'t choke. / Posición de seguridad — girar a la persona inconsciente pero que respira de lado para que no se atragante.'},
+  'FBAO':  {full:'Foreign Body Airway Obstruction', es:'Choking — something stuck in the throat blocking breathing. Treatment: 5 back blows + 5 abdominal thrusts (Heimlich), alternating. / Atragantamiento. Tratamiento: 5 golpes espalda + 5 compresiones Heimlich, alternando.'},
+  'OVACE': {full:'Obstrucción de la Vía Aérea por Cuerpo Extraño', es:'Choking (FBAO) — algo atascado en la garganta que impide respirar. Con tos eficaz: animar a toser. Sin tos: 5 golpes espalda + 5 Heimlich. / Something blocking the airway.'},
+  'AHA':   {full:'American Heart Association', es:'The organization that creates the CPR guidelines used in Puerto Rico. Their 2024 guidelines are the basis of this app. / La organización que crea las guías de RCP que se usan en Puerto Rico.'},
+};
+
+// Overlay
+const _pubOverlay = document.createElement('div');
+_pubOverlay.id = 'pub-acr-overlay';
+_pubOverlay.style.cssText = 'display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.7);backdrop-filter:blur(4px);align-items:center;justify-content:center;padding:20px;';
+_pubOverlay.innerHTML = `
+  <div style="background:#fff;border-radius:18px;padding:20px;max-width:320px;width:100%;text-align:center;box-shadow:0 8px 40px rgba(0,0,0,.3);border-top:6px solid #c1121f;position:relative;">
+    <div id="pub-acr-key" style="font-size:26px;font-weight:900;color:#c1121f;margin-bottom:6px;font-family:monospace;"></div>
+    <div id="pub-acr-full" style="font-size:13px;color:#1565c0;margin-bottom:10px;font-style:italic;"></div>
+    <div id="pub-acr-def" style="font-size:14px;line-height:1.6;color:#333;"></div>
+    <button onclick="document.getElementById('pub-acr-overlay').style.display='none'" style="margin-top:14px;background:#1a7a40;color:#fff;border:none;border-radius:10px;padding:9px 24px;font-size:15px;font-weight:800;cursor:pointer;">Got it / Entendido ✅</button>
+    <button onclick="document.getElementById('pub-acr-overlay').style.display='none'" style="position:absolute;top:10px;right:12px;background:transparent;border:none;color:#888;font-size:20px;cursor:pointer;">✕</button>
+  </div>`;
+document.body.appendChild(_pubOverlay);
+_pubOverlay.addEventListener('click', e => { if(e.target===_pubOverlay) _pubOverlay.style.display='none'; });
+document.addEventListener('keydown', e => { if(e.key==='Escape') _pubOverlay.style.display='none'; });
+
+function showPubAcr(key) {
+  const a = ACR_PUB[key]; if(!a) return;
+  document.getElementById('pub-acr-key').textContent = key;
+  document.getElementById('pub-acr-full').textContent = a.full;
+  document.getElementById('pub-acr-def').textContent = a.es;
+  _pubOverlay.style.display = 'flex';
+}
+
+// Wrap acronyms
+(function wrapPubAcr() {
+  const keys = Object.keys(ACR_PUB).sort((a,b) => b.length-a.length);
+  const pat = new RegExp('\\b('+keys.map(k=>k.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')).join('|')+')\\b','g');
+  const SKIP = ['#pub-acr-overlay','.pub-acr','.timer-display','.metro-timer',
+    '.phone-num','.lang-btn','.ctrl','.prog-label','.stars-box'].join(',');
+  const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {
+    acceptNode(node) {
+      const p = node.parentElement;
+      if (!p) return NodeFilter.FILTER_REJECT;
+      if (['SCRIPT','STYLE','INPUT','TEXTAREA'].includes(p.tagName)) return NodeFilter.FILTER_REJECT;
+      if (p.classList.contains('pub-acr') || p.closest(SKIP)) return NodeFilter.FILTER_REJECT;
+      return NodeFilter.FILTER_ACCEPT;
+    }
+  });
+  const nodes = []; while(walker.nextNode()) nodes.push(walker.currentNode);
+  nodes.forEach(node => {
+    if (!pat.test(node.textContent)) return;
+    pat.lastIndex = 0;
+    const frag = document.createDocumentFragment();
+    let last=0, m;
+    while((m=pat.exec(node.textContent))!==null) {
+      if(m.index>last) frag.appendChild(document.createTextNode(node.textContent.slice(last,m.index)));
+      const span = document.createElement('span');
+      span.className='pub-acr';
+      span.textContent=m[0];
+      span.setAttribute('data-key',m[1]);
+      span.style.cssText='cursor:pointer;border-bottom:2px dotted #ffd166;font-weight:900;';
+      span.addEventListener('click',e=>{e.stopPropagation();showPubAcr(span.getAttribute('data-key'));});
+      frag.appendChild(span);
+      last=m.index+m[0].length;
+    }
+    if(last<node.textContent.length) frag.appendChild(document.createTextNode(node.textContent.slice(last)));
+    node.parentNode.replaceChild(frag,node);
+  });
+})();
 </script>
 </body>
 </html>
